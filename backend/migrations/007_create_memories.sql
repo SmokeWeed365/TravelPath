@@ -1,0 +1,14 @@
+CREATE DATABASE IF NOT EXISTS travelpath
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+USE travelpath;
+
+CREATE TABLE IF NOT EXISTS memories (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255)      NOT NULL,
+  place VARCHAR(255)      NOT NULL,
+  description TEXT,
+  image_url VARCHAR(255),
+  created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
