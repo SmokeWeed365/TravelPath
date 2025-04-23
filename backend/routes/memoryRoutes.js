@@ -11,7 +11,7 @@ const {
 
 const router = express.Router();
 
-// Multer config
+// ตั้งค่า multer เก็บไฟล์ในโฟลเดอร์ uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '../uploads'));
@@ -24,10 +24,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // CRUD routes
-router.get('/', listMemories);
+router.get('/',    listMemories);
 router.get('/:id', getMemory);
-router.post('/', upload.single('image'), createNewMemory);
-router.put('/:id', upload.single('image'), updateExistingMemory);
-router.delete('/:id', deleteExistingMemory);
+
+// POST + PUT จะใช้ field ชื่อ 'image' รับไฟล์จาก client
+router.post('/',           upload.single('image'), createNewMemory);
+router.put('/:id',         upload.single('image'), updateExistingMemory);
+
+router.delete('/:id',      deleteExistingMemory);
 
 module.exports = router;

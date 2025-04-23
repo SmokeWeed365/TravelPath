@@ -5,8 +5,8 @@ const pool = require('../config/db');
 // GET /api/memories?page=&limit=
 async function listMemories(req, res) {
   try {
-    const page  = parseInt(req.query.page)  || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page   = parseInt(req.query.page)  || 1;
+    const limit  = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
     const [rows] = await pool.query(
       'SELECT * FROM memories ORDER BY created_at DESC LIMIT ? OFFSET ?',
@@ -22,8 +22,8 @@ async function listMemories(req, res) {
 // GET /api/memories/:id
 async function getMemory(req, res) {
   try {
-    const id   = req.params.id;
-    const [rows] = await pool.query(
+    const id      = req.params.id;
+    const [rows]  = await pool.query(
       'SELECT * FROM memories WHERE id = ?',
       [id]
     );
@@ -43,16 +43,18 @@ async function createNewMemory(req, res) {
     const imageUrl = req.file
       ? `/uploads/${req.file.filename}`
       : null;
+
     const [result] = await pool.query(
       'INSERT INTO memories (title, place, description, image_url) VALUES (?, ?, ?, ?)',
       [title, place, description, imageUrl]
     );
+
     res.status(201).json({
-      id: result.insertId,
+      id:          result.insertId,
       title,
       place,
       description,
-      image_url: imageUrl,
+      image_url:   imageUrl,
     });
   } catch (err) {
     console.error(err.stack);
@@ -60,18 +62,18 @@ async function createNewMemory(req, res) {
   }
 }
 
-// PUT /api/memories/:id  (field ชื่อ 'image' สำหรับไฟล์)
+// PUT /api/memories/:id  (field ชื่อ 'image')
 async function updateExistingMemory(req, res) {
   try {
-    const id = req.params.id;
+    const id           = req.params.id;
     const { title, place, description } = req.body;
 
-    // สร้าง SQL ไดนามิก: อัปเดต image_url เฉพาะเมื่อมีไฟล์ใหม่
+    // สร้าง SQL ไดนามิก: update image_url เฉพาะเมื่อมีไฟล์ใหม่
     let sql    = 'UPDATE memories SET title = ?, place = ?, description = ?';
     const args = [title, place, description];
 
     if (req.file) {
-      sql += ', image_url = ?';
+      sql   += ', image_url = ?';
       args.push(`/uploads/${req.file.filename}`);
     }
     sql += ' WHERE id = ?';
@@ -82,7 +84,7 @@ async function updateExistingMemory(req, res) {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    // คืนค่า object ที่อัปเดต (image_url จะมีเฉพาะถ้ามีไฟล์ใหม่)
+    // ส่งกลับ object ที่อัปเดต
     res.json({
       id,
       title,
@@ -101,8 +103,8 @@ async function updateExistingMemory(req, res) {
 // DELETE /api/memories/:id
 async function deleteExistingMemory(req, res) {
   try {
-    const id = req.params.id;
-    const [result] = await pool.query(
+    const id           = req.params.id;
+    const [result]     = await pool.query(
       'DELETE FROM memories WHERE id = ?',
       [id]
     );

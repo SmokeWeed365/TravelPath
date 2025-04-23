@@ -1,19 +1,37 @@
-// components/MemoryCard.js
+// frontend/components/MemoryCard.js
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  Platform
+} from 'react-native';
+import Constants from 'expo-constants';
 
 export default function MemoryCard({ memory, onPress }) {
+  const manifest   = Constants.manifest || Constants.manifest2 || {};
+  const hostUri    = manifest.debuggerHost || manifest.hostUri || 'localhost:19000';
+  let host         = hostUri.split(':')[0];
+  if (Platform.OS === 'android' && host === 'localhost') {
+    host = '10.0.2.2';
+  }
+
+  const imageSource = memory.image_url
+    ? { uri: `http://${host}:3000${memory.image_url}` }
+    : null;
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
-      {memory.image_url ? (
+      {imageSource ? (
         <Image
-          source={{ uri: memory.image_url.startsWith('http') 
-                    ? memory.image_url 
-                    : `http://localhost:3000${memory.image_url}` }}
+          source={imageSource}
           style={styles.image}
+          resizeMode="cover"
         />
       ) : (
-        <View style={[styles.image, styles.placeholder]} />
+        <View style={styles.imagePlaceholder} />
       )}
       <View style={styles.info}>
         <Text style={styles.title} numberOfLines={1}>
@@ -29,31 +47,34 @@ export default function MemoryCard({ memory, onPress }) {
 
 const styles = StyleSheet.create({
   card: {
-    width: 160,
+    flex: 1,
     margin: 8,
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: '#EEEDED',
     overflow: 'hidden',
-    elevation: 2, // shadow สำหรับ Android
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width:0, height:2 },
   },
   image: {
     width: '100%',
     height: 100,
+    backgroundColor: '#DDD',
   },
-  placeholder: {
-    backgroundColor: '#eee',
+  // กล่อง placeholder สีเทา
+  imagePlaceholder: {
+    width: '100%',
+    height: 100,
+    backgroundColor: '#DDD',
   },
   info: {
     padding: 8,
   },
   title: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
+    color: '#333',
   },
   place: {
-    fontSize: 14,
-    color: 'gray',
+    fontSize: 12,
+    color: '#777',
     marginTop: 4,
   },
 });
