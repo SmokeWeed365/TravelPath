@@ -1,0 +1,19 @@
+# Node modules
+node_modules/
+
+# Expo / React Native
+.expo/
+.expo-shared/
+npm-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+*.env
+
+# Uploads (ถ้าไม่อยากเก็บรูปใน repo)
+backend/uploads/
+
+# IDE / OS
+.vscode/
+.DS_Store
